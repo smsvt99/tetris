@@ -11,6 +11,8 @@
 </head>
 
 <body>
+    <button onClick="start()">Start</button>
+    <button onClick="stop()">Stop</button>
     <table>
         <tr>
             <td id="00"></td>
@@ -254,19 +256,29 @@
         let currentPiece = [];
         let currentColor;
         let gravityTimeout;
+        let gameBegun = false;
 
-        gravity();
-        generatePiece('O');
+        function start() {
+            gravity();
+            if (!gameBegun) {
+                getRandomPiece();
+            }
+        }
+        function stop() {
+            clearTimeout(gravityTimeout)
+        }
 
         function getRandomPiece() {
             const min = 0;
-            const max = 6;
+            const max = 7;
             const random = Math.floor(Math.random() * (+max - +min)) + +min;
             const pieceArray = ['O', 'I', 'S', 'Z', 'L', 'J', 'T']
             generatePiece(pieceArray[random])
         };
 
         function generatePiece(shapeName) {
+            console.log('generatePiece')
+            gameBegun = true;
             clearMs();
             checkForFullRows();
             if (shapeName === 'O') {
@@ -277,8 +289,59 @@
                 board[1][5] = 'ym'
                 currentPiece = [[0, 4], [0, 5], [1, 4], [1, 5]]
             }
+            else if (shapeName === 'I') {
+                currentColor = 'b'
+                board[0][3] = 'bm'
+                board[0][4] = 'bm'
+                board[0][5] = 'bm'
+                board[0][6] = 'bm'
+                currentPiece = [[0, 3], [0, 4], [0, 5], [0, 6]]
+            }
+            else if (shapeName === 'S') {
+                currentColor = 'r'
+                board[0][4] = 'rm'
+                board[0][5] = 'rm'
+                board[1][5] = 'rm'
+                board[1][6] = 'rm'
+                currentPiece = [[0, 4], [0, 5], [1, 5], [1, 6]]
+            }
+            else if (shapeName === 'Z') {
+                currentColor = 'g'
+                board[0][3] = 'gm'
+                board[0][4] = 'gm'
+                board[1][4] = 'gm'
+                board[1][5] = 'gm'
+                currentPiece = [[0, 3], [0, 4], [1, 4], [1, 5]]
+
+            }
+            else if (shapeName === 'L') {
+                currentColor = 'o'
+                board[0][3] = 'om'
+                board[0][4] = 'om'
+                board[0][5] = 'om'
+                board[1][5] = 'om'
+                currentPiece = [[0, 3], [0, 4], [0, 5], [1, 5]]
+
+            }
+            else if (shapeName === 'J') {
+                currentColor = 'p'
+                board[0][3] = 'pm'
+                board[0][4] = 'pm'
+                board[0][5] = 'pm'
+                board[1][3] = 'pm'
+                currentPiece = [[0, 3], [0, 4], [0, 5], [1, 3]]
+
+            }
+            else if (shapeName === 'T') {
+                currentColor = 'v'
+                board[0][3] = 'vm'
+                board[0][4] = 'vm'
+                board[0][5] = 'vm'
+                board[1][4] = 'vm'
+                currentPiece = [[0, 3], [0, 4], [0, 5], [1, 4]]
+
+            }
             drawBoard();
-            console.log(currentPiece)
         };
 
         function drawBoard() {
@@ -287,113 +350,142 @@
                     if (board[i][j] === 'e') {
                         document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'grey';
                     }
-                    if (board[i][j] === 'w'){
+                    if (board[i][j] === 'ew') {
                         document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'white';
+
+                        setTimeout(function () {
+                            document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'grey'
+                        }, 100)
+
+                        setTimeout(function () {
+                            document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'white'
+                        }, 200)
                     }
                     if (board[i][j].includes('y')) {
                         document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'yellow'
+                    }
+                    if (board[i][j].includes('b')) {
+                        document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'lightBlue'
+                    }
+                    if (board[i][j].includes('r')) {
+                        document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'red'
+                    }
+                    if (board[i][j].includes('g')) {
+                        document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'green'
+                    }
+                    if (board[i][j].includes('o')) {
+                        document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'orange'
+                    }
+                    if (board[i][j].includes('p')) {
+                        document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'pink'
+                    }
+                    if (board[i][j].includes('v')) {
+                        document.getElementById(i.toString() + j.toString()).style.backgroundColor = 'violet'
                     }
                 }
             }
         }
         function gravity() {
+            console.log('gravity')
             let allowed = true;
             for (let i = 0; i < currentPiece.length; i++)
-                if (!board[currentPiece[i][0] + 1]){
+                if (!board[currentPiece[i][0] + 1]) {
                     allowed = false
                 }
-                if (checkForBlocksBeneath()){
-                    allowed = false
+            if (checkForBlocksBeneath()) {
+                allowed = false
+            }
+            if (allowed) {
+                for (let i = 0; i < currentPiece.length; i++) {
+                    board[currentPiece[i][0]][currentPiece[i][1]] = 'e'
                 }
-            if (allowed){
-            for (let i = 0; i < currentPiece.length; i++) {
-                board[currentPiece[i][0]][currentPiece[i][1]] = 'e'
-            }
-            for (let i = 0; i < currentPiece.length; i++) {
-                if (currentPiece[i][0] + 1 < 18){
-                    board[currentPiece[i][0] + 1][currentPiece[i][1]] = currentColor + 'm';
+                for (let i = 0; i < currentPiece.length; i++) {
+                    if (currentPiece[i][0] + 1 < 18) {
+                        board[currentPiece[i][0] + 1][currentPiece[i][1]] = currentColor + 'm';
+                    }
                 }
+                for (let i = 0; i < currentPiece.length; i++) {
+                    currentPiece[i][0] = currentPiece[i][0] + 1
+                }
+                drawBoard();
             }
-            for (let i = 0; i < currentPiece.length; i++) {
-                currentPiece[i][0] = currentPiece[i][0] + 1
+            if (checkForFloor() || checkForBlocksBeneath()) {
+                stop();
+                getRandomPiece();
             }
-            drawBoard();
+
+            gravityTimeout = setTimeout(gravity, 1000);
         }
-        if(checkForFloor() || checkForBlocksBeneath()){
-                generatePiece('O');
-            }
-        gravityTimeout = setTimeout(gravity, 1000);
-    }
 
         function moveLeft() {
             let allowed = true;
             for (let i = 0; i < currentPiece.length; i++)
                 if (!board[currentPiece[i][0]][currentPiece[i][1] - 1]
-                ||
-                checkForBlocksLeft()
-                ){
+                    ||
+                    checkForBlocksLeft()
+                ) {
                     allowed = false
                 }
-            if (allowed){
-            for (let i = 0; i < currentPiece.length; i++) {
-                board[currentPiece[i][0]][currentPiece[i][1]] = 'e'
+            if (allowed) {
+                for (let i = 0; i < currentPiece.length; i++) {
+                    board[currentPiece[i][0]][currentPiece[i][1]] = 'e'
+                }
+                for (let i = 0; i < currentPiece.length; i++) {
+                    board[currentPiece[i][0]][currentPiece[i][1] - 1] = currentColor + 'm'
+                }
+                for (let i = 0; i < currentPiece.length; i++) {
+                    currentPiece[i][1] = currentPiece[i][1] - 1
+                }
+                drawBoard();
             }
-            for (let i = 0; i < currentPiece.length; i++) {
-                board[currentPiece[i][0]][currentPiece[i][1] - 1] = currentColor + 'm'
-            }
-            for (let i = 0; i < currentPiece.length; i++) {
-                currentPiece[i][1] = currentPiece[i][1] - 1
-            }
-            drawBoard();
         }
-    }
 
         function moveRight() {
             let allowed = true;
-            for (let i = 0; i < currentPiece.length; i++){
+            for (let i = 0; i < currentPiece.length; i++) {
                 if (!board[currentPiece[i][0]][currentPiece[i][1] + 1]
-                ||
-                checkForBlocksRight()
-                ){
+                    ||
+                    checkForBlocksRight()
+                ) {
                     allowed = false
                 }
             }
-            if (allowed){
-            for (let i = 0; i < currentPiece.length; i++) {
-                board[currentPiece[i][0]][currentPiece[i][1]] = 'e'
+            if (allowed) {
+                for (let i = 0; i < currentPiece.length; i++) {
+                    board[currentPiece[i][0]][currentPiece[i][1]] = 'e'
+                }
+                for (let i = 0; i < currentPiece.length; i++) {
+                    board[currentPiece[i][0]][currentPiece[i][1] + 1] = currentColor + 'm'
+                }
+                for (let i = 0; i < currentPiece.length; i++) {
+                    currentPiece[i][1] = currentPiece[i][1] + 1
+                }
+                drawBoard();
             }
-            for (let i = 0; i < currentPiece.length; i++) {
-                board[currentPiece[i][0]][currentPiece[i][1] + 1] = currentColor + 'm'
-            }
-            for (let i = 0; i < currentPiece.length; i++) {
-                currentPiece[i][1] = currentPiece[i][1] + 1
-            }
-            drawBoard();
         }
-    }
 
         function moveDown() {
             let allowed = true;
             for (let i = 0; i < currentPiece.length; i++)
                 if (!board[currentPiece[i][0] + 1]
-                ||
-                checkForBlocksBeneath()
-                ){
+                    ||
+                    checkForBlocksBeneath()
+                ) {
                     allowed = false
                 }
-            if (allowed){
-            for (let i = 0; i < currentPiece.length; i++) {
-                board[currentPiece[i][0]][currentPiece[i][1]] = 'e'
+            if (allowed) {
+                for (let i = 0; i < currentPiece.length; i++) {
+                    board[currentPiece[i][0]][currentPiece[i][1]] = 'e'
+                }
+                for (let i = 0; i < currentPiece.length; i++) {
+                    board[currentPiece[i][0] + 1][currentPiece[i][1]] = currentColor + 'm'
+                }
+                for (let i = 0; i < currentPiece.length; i++) {
+                    currentPiece[i][0] = currentPiece[i][0] + 1
+                }
+                drawBoard();
             }
-            for (let i = 0; i < currentPiece.length; i++) {
-                board[currentPiece[i][0] + 1][currentPiece[i][1]] = currentColor + 'm'
-            }
-            for (let i = 0; i < currentPiece.length; i++) {
-                currentPiece[i][0] = currentPiece[i][0] + 1
-            }
-            drawBoard();
         }
-    }
 
         window.addEventListener('keypress', function (e) {
             if (e.key === 'a') {
@@ -406,69 +498,90 @@
         })
 
         function checkForFloor() {
-            for (let i = 0; i < currentPiece.length; i++){
-              if (!board[currentPiece[i][0] + 1]){
-                return true
-              }
+            for (let i = 0; i < currentPiece.length; i++) {
+                if (!board[currentPiece[i][0] + 1]) {
+                    return true
+                }
             }
         }
-        function checkForBlocksBeneath(){
-            for (let i = 0; i < currentPiece.length; i++){
-              if (
-                board[currentPiece[i][0] + 1]
-                &&
-                board[currentPiece[i][0] + 1][currentPiece[i][1]] != 'e'
-              &&
-              board[currentPiece[i][0] + 1][currentPiece[i][1]] != currentColor + 'm'){
-                return true
-              }
+        function checkForBlocksBeneath() {
+            for (let i = 0; i < currentPiece.length; i++) {
+                if (
+                    board[currentPiece[i][0] + 1]
+                    &&
+                    board[currentPiece[i][0] + 1][currentPiece[i][1]] != 'e'
+                    &&
+                    board[currentPiece[i][0] + 1][currentPiece[i][1]] != currentColor + 'm') {
+                    return true
+                }
             }
         }
-        function checkForBlocksRight(){
-            for (let i = 0; i < currentPiece.length; i++){
-              if (
-                board[currentPiece[i][0]][currentPiece[i][1] + 1] != 'e'
-              &&
-              board[currentPiece[i][0]][currentPiece[i][1] + 1] != currentColor + 'm'){
-                return true
-              }
+        function checkForBlocksRight() {
+            for (let i = 0; i < currentPiece.length; i++) {
+                if (
+                    board[currentPiece[i][0]][currentPiece[i][1] + 1] != 'e'
+                    &&
+                    board[currentPiece[i][0]][currentPiece[i][1] + 1] != currentColor + 'm') {
+                    return true
+                }
             }
         }
-        function checkForBlocksLeft(){
-            for (let i = 0; i < currentPiece.length; i++){
-              if (
-                board[currentPiece[i][0]][currentPiece[i][1] - 1] != 'e'
-              &&
-              board[currentPiece[i][0]][currentPiece[i][1] - 1] != currentColor + 'm'){
-                return true
-              }
+        function checkForBlocksLeft() {
+            for (let i = 0; i < currentPiece.length; i++) {
+                if (
+                    board[currentPiece[i][0]][currentPiece[i][1] - 1] != 'e'
+                    &&
+                    board[currentPiece[i][0]][currentPiece[i][1] - 1] != currentColor + 'm') {
+                    return true
+                }
             }
         }
-        function clearMs(){
+        function clearMs() {
             for (let i = 0; i <= 17; i++) {
                 for (let j = 0; j <= 9; j++) {
-                    if (board[i][j].includes('m')){
-                        board[i][j] = board[i][j].replace('m','')
+                    if (board[i][j].includes('m')) {
+                        board[i][j] = board[i][j].replace('m', '')
                     }
                 }
             }
         }
-        function checkForFullRows(){
-            for (let i = 0; i < board.length; i++){
-                if (!board[i].includes('e')){
-                    clearRow(board[i])
+        function checkForFullRows() {
+            let fullRowArray = [];
+            for (let i = 0; i < board.length; i++) {
+                if (!board[i].includes('e')) {
+                    fullRowArray.push(i)
+                }
+            }
+            if (fullRowArray.length > 0) {
+                colorFullRow(fullRowArray)
+                console.log(fullRowArray)
+            }
+        }
+        function colorFullRow(array) {
+            console.log('color full row')
+            for (let i = 0; i < array.length; i++) {
+                for (let j = 0; j < 10; j++) {
+                    console.log(board[array[i]][j])
+                    board[array[i]][j] = 'ew'
+                }
+            }
+            drawBoard();
+            shiftBlocksDown(array);
+        }
+        function shiftBlocksDown(array) {
+            //begginning with the row above the lowest full row, shift the values of each row down one. If there are multiple full rows, repeat.
+            layer = 0;
+            for (let i = 0; i < array.length; i++) {
+                for (let j = array[i]; j > -1; j--) {
+                    if (j === 0) {
+                        board[j] = ['e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e']
+                    } else {
+                        board[j] = board[j - 1]
+                    }
                 }
             }
         }
-        function clearRow(array){
-            for (let i = 0; i < array.length; i++){
-                array[i] = 'w'
-            }
-            drawBoard();
-        }
-        function shiftBlocksDown(){
 
-        }
     </script>
 </body>
 
