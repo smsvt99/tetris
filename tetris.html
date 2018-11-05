@@ -387,6 +387,12 @@
         }
         function gravity() {
             console.log('gravity')
+
+            if (checkForFloor() || checkForBlocksBeneath()) {
+                stop();
+                getRandomPiece();
+            }
+
             let allowed = true;
             for (let i = 0; i < currentPiece.length; i++)
                 if (!board[currentPiece[i][0] + 1]) {
@@ -409,10 +415,10 @@
                 }
                 drawBoard();
             }
-            if (checkForFloor() || checkForBlocksBeneath()) {
-                stop();
-                getRandomPiece();
-            }
+            // if (checkForFloor() || checkForBlocksBeneath()) {
+            //     stop();
+            //     getRandomPiece();
+            // }
 
             gravityTimeout = setTimeout(gravity, 1000);
         }
